@@ -1,5 +1,9 @@
 public enum ID
 {
   Player(),
-  EnemyBasic();
+  EnemyBasic(),
+  EnemyAdvanced(),
+  Asteroid(),
+  Bullet(),
+  GameOver();
 }

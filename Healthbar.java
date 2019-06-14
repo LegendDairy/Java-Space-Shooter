@@ -6,6 +6,12 @@ public class Healthbar
 {
   private int Health = 100;
   private int score = 0;
+  private GameObjectHandler go_handler;
+
+  public Healthbar(GameObjectHandler go_h)
+  {
+    go_handler = go_h;
+  }
 
   public void reduceHealth(int h)
   {
@@ -21,9 +27,22 @@ public class Healthbar
       Health = 100;
   }
 
+  public void increaseScore(int s)
+  {
+    score += s;
+  }
+  public int getHealth()
+  {
+    return Health;
+  }
+
+
   public void tick()
   {
-    score++;
+    if(Health == 0)
+    {
+      go_handler.addObject(new GameOver(score, go_handler));
+    }
   }
 
   public void render(Graphics g)

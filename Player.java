@@ -1,6 +1,8 @@
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+
 
 public class Player extends GameObject
 {
@@ -8,13 +10,16 @@ public class Player extends GameObject
   private static int WIDTH = 32;
   private static int HEIGHT = 32;
   private Healthbar health_bar;
+  private BufferedImage sprite;
+
   /* Constructor */
-  public Player(int x, int y, ID id, GameObjectHandler go_handler, Healthbar h)
+  public Player(float x, float y, ID id, GameObjectHandler go_handler, Healthbar h, BufferedImage sprite)
   {
     /* Call the superclass constructor */
     super(x,y,0,0, id);
     this.go_handler = go_handler;
     this.health_bar = h;
+    this.sprite = sprite;
   }
 
   public void tick()
@@ -39,27 +44,35 @@ public class Player extends GameObject
       for(int i =0; i<go_handler.objects.size(); i++)
       {
         GameObject tmp = go_handler.objects.get(i);
-        if(tmp.id == ID.EnemyBasic)
+        if(tmp.id == ID.Asteroid)
         {
-          Rectangle player = new Rectangle(this.x, this.y, WIDTH, HEIGHT);
+          Rectangle player = new Rectangle((int)this.x, (int)this.y, WIDTH, HEIGHT);
           if(player.getBounds().intersects(tmp.getBounds()))
           {
             health_bar.reduceHealth(1);
           }
         }
+        if(tmp.id ==  ID.EnemyAdvanced)
+        {
+          Rectangle player = new Rectangle((int)this.x, (int)this.y, WIDTH, HEIGHT);
+          if(player.getBounds().intersects(tmp.getBounds()))
+          {
+            health_bar.reduceHealth(5);
+          }
+        }
       }
-
   }
 
   public Rectangle getBounds()
   {
-    return new Rectangle(x,y,WIDTH,HEIGHT);
+    return new Rectangle((int)x,(int)y,WIDTH,HEIGHT);
   }
 
   /* Render the game object. */
   public void render(Graphics g)
   {
-    g.setColor(Color.green);
-    g.fillRect(x,y,WIDTH,HEIGHT);
+    //g.setColor(Color.green);
+    //g.fillRect((int)x,(int)y,WIDTH,HEIGHT);
+    g.drawImage(sprite, (int)x,(int)y,null);
   }
 }

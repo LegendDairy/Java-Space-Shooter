@@ -1,9 +1,14 @@
-
 import java.awt.Canvas;
 import java.awt.image.BufferStrategy;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Random;
+import java.awt.image.BufferedImage;
+import java.awt.Image;
+
+import java.io.IOException;
+
+
 
 public class Game extends Canvas implements Runnable
 {
@@ -12,6 +17,7 @@ public class Game extends Canvas implements Runnable
   private Boolean running = false;
   private Random r;
   private Healthbar health_bar;
+  private SpriteSheet spritesheet;
 
   /* Handles all the game objects. */
   private GameObjectHandler go_handler;
@@ -19,22 +25,28 @@ public class Game extends Canvas implements Runnable
   /* Game constructor */
   public Game()
   {
+    /* Load the sprite sheet. Do this before gameloop starts for load time. */
+    spritesheet = new SpriteSheet("spritesheet.png");
+
     /* Create a window class */
-    new Window(WIDTH, HEIGHT, "meme game", this);
+    new Window(WIDTH, HEIGHT, "Call of Space Duty: Present Warfare", this);
 
     go_handler = new GameObjectHandler();
-    health_bar = new Healthbar();
+    health_bar = new Healthbar(go_handler);
 
-    this.addKeyListener(new KeyHandler(go_handler));
+
+    this.addKeyListener(new KeyHandler(go_handler,health_bar));
 
     r = new Random();
 
-    go_handler.addObject(new Player(100,100,ID.Player, go_handler, health_bar));
-    for(int i = 0; i < 10; i++)
-    {
-      go_handler.addObject(new EnemyBasic(r.nextInt(WIDTH),r.nextInt(HEIGHT),r.nextInt(6), r.nextInt(6), ID.EnemyBasic));
-    }
+    go_handler.addObject(new Player(100,400,ID.Player, go_handler, health_bar, spritesheet.grabImage(0, 0, 32, 32)));
 
+    for(int i = 0; i < 20; i++)
+    {
+      go_handler.addObject(new Asteroid(r.nextInt(WIDTH),r.nextInt(6), ID.Asteroid, spritesheet.grabImage(2+r.nextInt(5), r.nextInt(2), 16, 16)));
+    }
+    go_handler.addObject(new EnemyAdvanced(200,0, ID.EnemyAdvanced, go_handler));
+    /* still running here while thread is running run() */
 
   }
 
@@ -46,23 +58,21 @@ public class Game extends Canvas implements Runnable
     thread = new Thread(this);
     running = true;
     thread.start();
-    /* still running here */
-
   }
 
   public synchronized void stop()
   {
     try
     {
-      thread.join();
       running = false;
+      thread.join();
     } catch(Exception e) {
       e.printStackTrace();
     }
   }
 
 /* Game loop. */
-/* This is the runnable part of the created thread.*/
+/* This is the runnable part of the created thread. */
   public void run()
   {
     this.requestFocus();
@@ -81,6 +91,12 @@ public class Game extends Canvas implements Runnable
       unprocessed += (now-lastTime) / nsPerTick;
       lastTime = now;
 
+      if (canRender)
+      {
+        render();
+        fps++;
+      }
+
       if(unprocessed >= 1)
       {
         tick();
@@ -95,12 +111,6 @@ public class Game extends Canvas implements Runnable
         Thread.sleep(1);
       } catch(InterruptedException e) {
         e.printStackTrace();
-      }
-
-      if (canRender)
-      {
-        render();
-        fps++;
       }
 
       if(System.currentTimeMillis() - 1000 > timer)
@@ -128,7 +138,7 @@ public class Game extends Canvas implements Runnable
     if(bs == null)
     {
       /* Create a buffer strategy. */
-      this.createBufferStrategy(6);
+      this.createBufferStrategy(3);
       /* return to set bs correctly.*/
       return;
     }
@@ -147,7 +157,7 @@ public class Game extends Canvas implements Runnable
     bs.show();
   }
 
-  public static int clamp(int var, int min, int max)
+  public static float clamp(float var, float min, float max)
   {
     if(var >= max)
       return var = max;

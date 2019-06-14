@@ -4,12 +4,12 @@ import java.awt.Rectangle;
 /* Abstract class, cannot be instantiaded, but can be subclassed. */
 public abstract class GameObject
 {
-  protected int x,y;    // Can only be accessed by objects that inherit the gameobject.
+  protected float x,y;    // Can only be accessed by objects that inherit the gameobject.
   protected ID id;      // ID of the object
-  protected int vx, vy; // Velocity along x and y
+  protected float vx, vy; // Velocity along x and y
 
   /* Constructor */
-  public GameObject(int x, int y,int vx, int vy, ID id)
+  public GameObject(float x, float y,float vx, float vy, ID id)
   {
     this.x = x;
     this.y = y;
@@ -23,21 +23,21 @@ public abstract class GameObject
   public abstract void render(Graphics g);
   public abstract Rectangle getBounds();
 
-  public void setx(int x)
+  public void setx(float x)
   {
     this.x = x;
   }
-  public void sety(int y)
+  public void sety(float y)
   {
     this.y = y;
   }
-  public int getx()
+  public float getx()
   {
     return this.x;
   }
-  public int gety()
+  public float gety()
   {
-    return this.x;
+    return this.y;
   }
   public void setID(ID id)
   {
@@ -47,21 +47,28 @@ public abstract class GameObject
   {
     return this.id;
   }
-  public void setvx(int vx)
+  public void setvx(float vx)
   {
     this.vx = vx;
   }
-  public void setvy(int vy)
+  public void setvy(float vy)
   {
     this.vy = vy;
   }
-  public int getvx()
+  public float getvx()
   {
     return this.vx;
   }
-  public int getvy()
+  public float getvy()
   {
     return this.vy;
   }
 
+  public void setParameters(float x, float y, float vx, float vy)
+  {
+    this.x = x;
+    this.y = y;
+    this.vx = vx;
+    this.vy = vy;
+  }
 }
